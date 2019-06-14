@@ -16,6 +16,9 @@ class Api {
   //导航数据
   static const String Navigation = "navi/json";
 
+  //项目分类
+  static const String Project = "project/tree/json";
+
   //登录,注册
   static const String LOGIN = "user/login";
   static const String REGISTER = "user/register";
