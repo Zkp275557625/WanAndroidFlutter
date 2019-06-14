@@ -4,6 +4,7 @@ import 'package:flutter_wanandroid/widget/MainDrawer.dart';
 import 'package:flutter_wanandroid/pages/HomePage.dart';
 import 'package:flutter_wanandroid/pages/KnowledgePage.dart';
 import 'package:flutter_wanandroid/pages/WeChatPage.dart';
+import 'package:flutter_wanandroid/pages/NavigationPage.dart';
 
 /// MainPage：主页面，相当于MainActivity
 
@@ -28,7 +29,7 @@ class MainPageState extends State<MainPage> with TickerProviderStateMixin {
         HomePage(),
         KnowledgePage(),
         WeChatPage(),
-        HomePage(),
+        NavigationPage(),
         HomePage()
       ],
       index: tabIndex,
