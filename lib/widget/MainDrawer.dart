@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/constant/AppColors.dart';
+import 'package:flutter_wanandroid/pages/WelfarePage.dart';
 
 ///抽屉菜单
 class MainDrawer extends StatefulWidget {
@@ -38,6 +39,12 @@ class MainDrawerState extends State<MainDrawer> {
               style: TextStyle(fontSize: 16.0),
             ),
             leading: Icon(Icons.image),
+            onTap: () {
+              //跳转到福利页面
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return WelfarePage();
+              }));
+            },
           ),
           ListTile(
             title: Text(

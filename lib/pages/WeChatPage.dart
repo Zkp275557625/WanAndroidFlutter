@@ -18,7 +18,7 @@ class WeChatPageState extends State<WeChatPage>
   List<dynamic> mListData;
 
   ///获取微信公众号列表
-  getWeChatList() async {
+  getWeChatList() {
     HttpUtil.get(Api.WE_CHAT, (data) {
       setState(() {
         mListData = data;

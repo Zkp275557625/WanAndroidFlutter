@@ -1,6 +1,8 @@
 class Api {
   static const String BaseUrl = "https://www.wanandroid.com/";
 
+  static const String BaseUrlGank = "https://gank.io/api/";
+
   //首页banner
   static const String BANNER = "banner/json";
 
@@ -18,6 +20,9 @@ class Api {
 
   //项目分类
   static const String Project = "project/tree/json";
+
+  //福利页面
+  static const String Welfare = "data/福利/10";
 
   //登录,注册
   static const String LOGIN = "user/login";
