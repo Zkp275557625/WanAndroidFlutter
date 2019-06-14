@@ -10,6 +10,9 @@ class Api {
   //知识体系
   static const   String TREE = "tree/json";
 
+  //微信公众号列表
+  static const   String WE_CHAT = "wxarticle/chapters/json ";
+
   //登录,注册
   static const String LOGIN = "user/login";
   static const String REGISTER = "user/register";

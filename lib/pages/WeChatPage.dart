@@ -1,32 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_wanandroid/http/http_util.dart';
+import 'package:flutter_wanandroid/http/api.dart';
 import 'package:flutter_wanandroid/pages/ArticleListPage.dart';
 
-///文章列表页面
-class ArticlesPage extends StatefulWidget {
-  final data;
-
-  ArticlesPage(this.data);
-
+///微信公众号页面
+class WeChatPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return ArticlesPageState();
+    return WeChatPageState();
   }
 }
 
-class ArticlesPageState extends State<ArticlesPage>
+class WeChatPageState extends State<WeChatPage>
     with SingleTickerProviderStateMixin {
   TabController tabController;
   List<Tab> tabs = List();
-  List<dynamic> list;
+  List<dynamic> mListData;
+
+  ///获取微信公众号列表
+  getWeChatList() async {
+    HttpUtil.get(Api.WE_CHAT, (data) {
+      setState(() {
+        mListData = data;
+        for (var value in mListData) {
+          tabs.add(Tab(text: value['name']));
+        }
+        tabController = TabController(length: mListData.length, vsync: this);
+      });
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    list = widget.data['children'];
-    for (var value in list) {
-      tabs.add(Tab(text: value['name']));
-    }
-    tabController = TabController(length: list.length, vsync: this);
+
+    getWeChatList();
   }
 
   @override
@@ -38,11 +46,8 @@ class ArticlesPageState extends State<ArticlesPage>
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.data['name']),
-      ),
       body: DefaultTabController(
-          length: list.length,
+          length: mListData.length,
           child: new Scaffold(
             appBar: TabBar(
               tabs: tabs,
@@ -55,7 +60,7 @@ class ArticlesPageState extends State<ArticlesPage>
             body: TabBarView(
               //同步控制器，不设置会是的页面和tab不同步
               controller: tabController,
-              children: list.map((dynamic itemData) {
+              children: mListData.map((dynamic itemData) {
                 return ArticleListPage(itemData['id'].toString());
               }).toList(),
             ),
