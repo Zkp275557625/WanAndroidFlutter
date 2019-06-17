@@ -15,13 +15,14 @@ class WelfarePageState extends State<WelfarePage> {
   List mListData = List();
   ScrollController scrollController = new ScrollController();
 
+  ///获取福利图片数据
+  ///数据来源：干货集中营
   void getWelfareData() {
     String url = Api.Welfare + "/$curPage";
 
     HttpUtil.get(url, (data) {
       if (data != null) {
         var listData = data;
-
         setState(() {
           List list = List();
           if (curPage == 0) {
@@ -30,10 +31,6 @@ class WelfarePageState extends State<WelfarePage> {
           list.addAll(mListData);
           list.addAll(listData);
           mListData = list;
-
-          var length = mListData.length;
-
-          print('mListData.length==$length');
         });
       }
     });

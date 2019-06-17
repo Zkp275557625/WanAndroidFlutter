@@ -99,8 +99,7 @@ class NavigationPageState extends State<NavigationPage> {
                                               width: 1),
                                         )),
                                     child: Text(
-                                      mListData[indexChecked]['articles'][index]
-                                          ['title'],
+                                      mListData[indexChecked]['articles'][index]['title'],
                                       style: TextStyle(fontSize: 14.0),
                                     ),
                                   ),

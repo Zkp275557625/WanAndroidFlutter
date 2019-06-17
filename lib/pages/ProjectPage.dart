@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/http/http_util.dart';
 import 'package:flutter_wanandroid/http/api.dart';
 import 'package:flutter_wanandroid/pages/ArticleListPage.dart';
+import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
+import 'package:flutter_wanandroid/constant/AppColors.dart';
 
 ///项目页面
 class ProjectPage extends StatefulWidget{
@@ -50,10 +52,16 @@ class ProjectPageState extends State<ProjectPage> with SingleTickerProviderState
           length: mListData.length,
           child: new Scaffold(
             appBar: TabBar(
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicator: new BubbleTabIndicator(
+                indicatorHeight: 35.0,
+                indicatorColor: AppColors.colorPrimary,
+                tabBarIndicatorSize: TabBarIndicatorSize.tab,
+              ),
               tabs: tabs,
               isScrollable: true,
               controller: tabController,
-              labelColor: Theme.of(context).primaryColor,
+              labelColor: Colors.white,
               unselectedLabelColor: Colors.black,
               indicatorColor: Theme.of(context).primaryColor,
             ),

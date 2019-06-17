@@ -32,7 +32,7 @@ class ArticleDetailPageState extends State<ArticleDetailPage> {
   @override
   Widget build(BuildContext context) {
     return WebviewScaffold(
-      url: widget.url.replaceAll('http', 'https'),
+      url: widget.url.replaceAll('http://', 'https://'),
       appBar: AppBar(
         title: Text(widget.title),
       ),

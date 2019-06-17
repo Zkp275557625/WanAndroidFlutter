@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_wanandroid/constant/AppColors.dart';
+import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 import 'package:flutter_wanandroid/pages/ArticleListPage.dart';
 
 ///文章列表页面
@@ -45,10 +47,16 @@ class ArticlesPageState extends State<ArticlesPage>
           length: list.length,
           child: new Scaffold(
             appBar: TabBar(
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicator: new BubbleTabIndicator(
+                indicatorHeight: 35.0,
+                indicatorColor: AppColors.colorPrimary,
+                tabBarIndicatorSize: TabBarIndicatorSize.tab,
+              ),
               tabs: tabs,
               isScrollable: true,
               controller: tabController,
-              labelColor: Theme.of(context).primaryColor,
+              labelColor: Colors.white,
               unselectedLabelColor: Colors.black,
               indicatorColor: Theme.of(context).primaryColor,
             ),

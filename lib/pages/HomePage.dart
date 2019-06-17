@@ -99,8 +99,7 @@ class HomePageState extends State<HomePage> {
         height: 180.0,
         child: bannerWidget,
       );
-    }
-    i -= 1;
+    }    i -= 1;
 
     var itemData = mListData[i];
 
