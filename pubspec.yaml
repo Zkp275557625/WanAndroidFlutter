@@ -45,6 +45,8 @@ flutter:
   #注册资源文件
   assets:
     - assets/ic_launcher.png
+    - assets/icon_user.png
+    - assets/icon_password.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

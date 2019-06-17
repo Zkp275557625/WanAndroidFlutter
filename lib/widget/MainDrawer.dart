@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/constant/AppColors.dart';
 import 'package:flutter_wanandroid/pages/WelfarePage.dart';
 import 'package:flutter_wanandroid/pages/AboutPage.dart';
+import 'package:flutter_wanandroid/pages/ArticleDetailPage.dart';
+import 'package:flutter_wanandroid/pages/LoginPage.dart';
 
 ///抽屉菜单
 class MainDrawer extends StatefulWidget {
@@ -22,10 +24,15 @@ class MainDrawerState extends State<MainDrawer> {
           UserAccountsDrawerHeader(
             decoration: BoxDecoration(color: AppColors.colorPrimary),
             accountName: Text('userName'),
-            accountEmail: Text('275557625@qq.com'),
             currentAccountPicture: CircleAvatar(
               child: Icon(Icons.android),
             ),
+            onDetailsPressed: (){
+              //判断用户是否已登录，已登录则不可点击，否则跳转到登录页面
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return LoginPage();
+              }));
+            },
           ),
           ListTile(
             title: Text(
@@ -94,6 +101,14 @@ class MainDrawerState extends State<MainDrawer> {
               style: TextStyle(fontSize: 16.0),
             ),
             leading: Icon(Icons.layers),
+            onTap: (){
+               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return ArticleDetailPage(
+                  title: '测试博客',
+                  url: 'https://www.cnblogs.com/imyalost/category/873684.html',
+                );
+              }));
+            },
           ),
           ListTile(
             title: Text(
