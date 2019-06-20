@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/constant/AppColors.dart';
+import 'package:toast/toast.dart';
+import 'package:flutter_wanandroid/http/http_util_with_cookie.dart';
+import 'package:flutter_wanandroid/http/api.dart';
+import 'package:flutter_wanandroid/pages/LoginPage.dart';
 
 ///注册页面
 class RegisterPage extends StatefulWidget {
@@ -10,27 +14,63 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
-  @override
-  Widget build(BuildContext context) {
+  ///监听用户名输入框文字变化
+  final TextEditingController userNameController = TextEditingController();
 
-    ///监听用户名输入框文字变化
-    final TextEditingController userNameController = TextEditingController();
+  ///监听密码输入框文字变化
+  final TextEditingController passwordController = TextEditingController();
+
+  ///监听重复密码输入框变化
+  final TextEditingController rePasswordController = TextEditingController();
+
+  void register() {
+    if (userNameController.text.toString().length == 0 ||
+        passwordController.text.toString().length == 0 ||
+        rePasswordController.text.toString().length == 0) {
+      Toast.show('用户名或密码不能为空', context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    } else {
+      Map<String, String> params = Map();
+      params.putIfAbsent("username", () => userNameController.text.toString());
+      params.putIfAbsent("password", () => passwordController.text.toString());
+      params.putIfAbsent(
+          "repassword", () => rePasswordController.text.toString());
+
+      HttpUtil.post(Api.REGISTER, (data) {
+        Map<String, dynamic> map = data;
+        if (map['errorCode'] == 0) {
+          Toast.show('注册成功', context,
+              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+
+          //跳转到登录页面，并设置账号密码
+          Navigator.pop(
+              context, [userNameController.text, passwordController.text]);
+        } else {
+          Toast.show(map['errorMsg'], context,
+              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        }
+      }, params: params);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
     userNameController.addListener(() {
       print('输入的内容：${userNameController.text}');
     });
 
-    ///监听密码输入框文字变化
-    final TextEditingController passwordController = TextEditingController();
     passwordController.addListener(() {
       print('输入的内容：${passwordController.text}');
     });
 
-    ///监听重复密码输入框变化
-    final TextEditingController rePasswordController = TextEditingController();
     rePasswordController.addListener(() {
       print('输入的内容：${rePasswordController.text}');
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('注册'),
@@ -110,11 +150,11 @@ class RegisterPageState extends State<RegisterPage> {
                           child: new RaisedButton(
                             color: AppColors.colorPrimary,
                             child: Text(
-                              '登录',
+                              '注册',
                               style: TextStyle(color: Colors.white),
                             ),
                             onPressed: () {
-                              print('被点击了');
+                              register();
                             },
                           ),
                         ),

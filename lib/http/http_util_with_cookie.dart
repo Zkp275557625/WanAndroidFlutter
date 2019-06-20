@@ -98,14 +98,13 @@ class HttpUtil {
       if(url.contains(Api.LOGIN)){
         SharedPreferences sp = await SharedPreferences.getInstance();
         sp.setString("cookie", res.headers['set-cookie']);
-
       }
 
       // callback返回data,数据类型为dynamic
       //errorCallback中为了方便我直接返回了String类型的errorMsg
       if (callback != null) {
-        if (errorCode >= 0) {
-          callback(data);
+        if (errorCode >= -1) {
+          callback(map);
         } else {
           _handError(errorCallback, errorMsg);
         }

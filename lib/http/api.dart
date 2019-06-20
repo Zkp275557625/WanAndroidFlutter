@@ -24,7 +24,16 @@ class Api {
   //福利页面
   static const String Welfare = "data/福利/10";
 
-  //登录,注册
+  //登录
   static const String LOGIN = "user/login";
+
+  //退出登录
+  static const String LOGOUT = "user/logout/json";
+
+  //注册
   static const String REGISTER = "user/register";
+
+  //获取收藏的文章列表
+  static const String COLLECT_LIST = "lg/collect/list/";
+
 }
