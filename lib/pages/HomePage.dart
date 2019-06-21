@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/http/api.dart';
-import 'package:flutter_wanandroid/http/http_util.dart';
+import 'package:flutter_wanandroid/http/HttpUtilDio.dart';
 import 'package:flutter_wanandroid/widget/BannerWidget.dart';
 import 'package:flutter_wanandroid/widget/EndLine.dart';
 import 'package:flutter_wanandroid/widget/ArticleItem.dart';
+import 'package:toast/toast.dart';
 
 ///首页
 
@@ -16,7 +17,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   List mListData = List();
-  var curPage = 0;
+  var currentPage = 0;
   var listTotalSize = 0;
   List bannerData;
   List<BannerItem> bannerList = [];
@@ -24,46 +25,46 @@ class HomePageState extends State<HomePage> {
 
   ScrollController controller = ScrollController();
 
-  void getBanner() {
-    String bannerUrl = Api.BANNER;
+  void getBanner() async {
+    Map<String, dynamic> response =
+        await HttpUtilDio.getInstance().get(Api.BANNER);
 
-    HttpUtil.get(bannerUrl, (data) {
-      if (data != null) {
-        setState(() {
-          bannerData = data;
-
-          for (int i = 0; i < bannerData.length; i++) {
-            BannerItem item = BannerItem.defaultBannerItem(
-                bannerData[i]['imagePath'], bannerData[i]['title']);
-            bannerList.add(item);
-          }
-
-          bannerWidget =
-              new BannerWidget(180.0, bannerList, bannerPress: (pos, item) {
-            print('第 $pos 点击了');
-          });
+    if (response['errorCode'] == 0) {
+      bannerData = response['data'];
+      if (bannerData != null) {
+        for (int i = 0; i < bannerData.length; i++) {
+          BannerItem item = BannerItem.defaultBannerItem(
+              bannerData[i]['imagePath'], bannerData[i]['title']);
+          bannerList.add(item);
+        }
+        bannerWidget =
+            new BannerWidget(180.0, bannerList, bannerPress: (pos, item) {
+          print('第 $pos 点击了');
         });
       }
-    });
+    } else {
+      Toast.show(response['errorMsg'], context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    }
   }
 
-  void getHomeArticleList() {
-    String url = Api.ARTICLE_LIST;
-    url += "$curPage/json";
+  void getHomeArticleList() async {
+    String url = Api.ARTICLE_LIST + "$currentPage/json";
 
-    HttpUtil.get(url, (data) {
+    Map<String, dynamic> response = await HttpUtilDio.getInstance().get(url);
+
+    if (response['errorCode'] == 0) {
+      var data = response['data'];
       if (data != null) {
-        Map<String, dynamic> map = data;
-        var listData = map['datas'];
-        listTotalSize = map["total"];
+        var listData = data['datas'];
 
+        listTotalSize = data["total"];
         setState(() {
           List list = List();
-          if (curPage == 0) {
+          if (currentPage == 0) {
             mListData.clear();
           }
-          curPage++;
-
+          currentPage++;
           list.addAll(mListData);
           list.addAll(listData);
           if (list.length >= listTotalSize) {
@@ -72,7 +73,10 @@ class HomePageState extends State<HomePage> {
           mListData = list;
         });
       }
-    });
+    } else {
+      Toast.show(response['errorMsg'], context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    }
   }
 
   HomePageState() {
@@ -112,7 +116,7 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<Null> pullToRefresh() async {
-    curPage = 0;
+    currentPage = 0;
     bannerList.clear();
     getBanner();
     getHomeArticleList();

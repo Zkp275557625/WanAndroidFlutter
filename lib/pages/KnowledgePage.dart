@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_wanandroid/http/http_util.dart';
+import 'package:flutter_wanandroid/http/HttpUtilDio.dart';
 import 'package:flutter_wanandroid/http/api.dart';
 import 'package:flutter_wanandroid/pages/ArticlesPage.dart';
+import 'package:toast/toast.dart';
 
 ///知识体系页面
 class KnowledgePage extends StatefulWidget {
@@ -15,11 +16,15 @@ class KnowledgePageState extends State<KnowledgePage> {
   var mListData;
 
   getTree() async {
-    HttpUtil.get(Api.TREE, (data) {
-      setState(() {
-        mListData = data;
-      });
-    });
+    Map<String, dynamic> response =
+        await HttpUtilDio.getInstance().get(Api.TREE);
+
+    if (response['errorCode'] == 0) {
+      mListData = response['data'];
+    } else {
+      Toast.show(response['errorMsg'], context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    }
   }
 
   Widget buildItem(i) {
@@ -85,7 +90,7 @@ class KnowledgePageState extends State<KnowledgePage> {
     );
   }
 
-  void onItemClick(itemData){
+  void onItemClick(itemData) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return ArticlesPage(itemData);
     }));
@@ -105,7 +110,7 @@ class KnowledgePageState extends State<KnowledgePage> {
       );
     } else {
       Widget listView = ListView.builder(
-        itemCount: mListData.length,
+        itemCount: mListData == null ? 0 : mListData.length,
         itemBuilder: (context, i) => buildItem(i),
       );
       return listView;

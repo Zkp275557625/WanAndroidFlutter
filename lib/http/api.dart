@@ -36,4 +36,13 @@ class Api {
   //获取收藏的文章列表
   static const String COLLECT_LIST = "lg/collect/list/";
 
+  //收藏站内文章
+  static const String COLLECT_INSIDE = "lg/collect/";
+
+  //取消收藏站内文章
+  static const String UN_COLLECT_OUTSIDE = "lg/uncollect_originId/";
+
+  //常用网站
+  static const String FRIEND = "friend/json";
+
 }

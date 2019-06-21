@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/pages/ArticleDetailPage.dart';
+import 'package:toast/toast.dart';
+import 'package:flutter_wanandroid/http/HttpUtilDio.dart';
+import 'package:flutter_wanandroid/http/api.dart';
 
 ///文章列表Item
 // ignore: must_be_immutable
@@ -15,10 +18,31 @@ class ArticleItem extends StatefulWidget {
 }
 
 class ArticleItemState extends State<ArticleItem> {
+  bool isCollect;
+  int id = 0;
+
+  void dealWithCollect() async {
+    var url = "";
+    if (isCollect) {
+      url = Api.UN_COLLECT_OUTSIDE + "$id/json";
+    } else {
+      url = Api.COLLECT_INSIDE + "$id/json";
+    }
+    Map<String, dynamic> response = await HttpUtilDio.getInstance().post(url);
+    if (response['errorCode'] == 0) {
+      Toast.show('操作成功', context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      isCollect = !isCollect;
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    //是否收藏
-    bool isCollect = widget.itemData["collect"];
+    if (isCollect == null) {
+      isCollect = widget.itemData['collect'];
+      id = widget.itemData['id'];
+    }
 
     Row author = Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -64,7 +88,7 @@ class ArticleItemState extends State<ArticleItem> {
             color: isCollect ? Colors.red : null,
           ),
           onPressed: () {
-            print('被点击了');
+            dealWithCollect();
           },
         ),
         Expanded(
@@ -99,10 +123,11 @@ class ArticleItemState extends State<ArticleItem> {
       //阴影
       elevation: 8.0,
       //设置圆角半径
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14.0))),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14.0))),
       child: InkWell(
         child: column,
-        onTap: (){
+        onTap: () {
           itemClick(widget.itemData);
         },
       ),
@@ -117,5 +142,4 @@ class ArticleItemState extends State<ArticleItem> {
       );
     }));
   }
-
 }

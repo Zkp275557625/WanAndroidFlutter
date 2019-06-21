@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/constant/AppColors.dart';
 import 'package:toast/toast.dart';
-import 'package:flutter_wanandroid/http/http_util_with_cookie.dart';
+import 'package:flutter_wanandroid/http/HttpUtilDio.dart';
 import 'package:flutter_wanandroid/http/api.dart';
-import 'package:flutter_wanandroid/pages/LoginPage.dart';
+import 'package:toast/toast.dart';
 
 ///注册页面
 class RegisterPage extends StatefulWidget {
@@ -23,7 +23,7 @@ class RegisterPageState extends State<RegisterPage> {
   ///监听重复密码输入框变化
   final TextEditingController rePasswordController = TextEditingController();
 
-  void register() {
+  void register() async {
     if (userNameController.text.toString().length == 0 ||
         passwordController.text.toString().length == 0 ||
         rePasswordController.text.toString().length == 0) {
@@ -36,20 +36,19 @@ class RegisterPageState extends State<RegisterPage> {
       params.putIfAbsent(
           "repassword", () => rePasswordController.text.toString());
 
-      HttpUtil.post(Api.REGISTER, (data) {
-        Map<String, dynamic> map = data;
-        if (map['errorCode'] == 0) {
-          Toast.show('注册成功', context,
-              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      Map<String, dynamic> response = await HttpUtilDio.getInstance()
+          .get(Api.REGISTER, queryParams: params);
 
-          //跳转到登录页面，并设置账号密码
-          Navigator.pop(
-              context, [userNameController.text, passwordController.text]);
-        } else {
-          Toast.show(map['errorMsg'], context,
-              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-        }
-      }, params: params);
+      if (response['errorCode'] == 0) {
+        Toast.show('注册成功', context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        //跳转到登录页面，并设置账号密码
+        Navigator.pop(
+            context, [userNameController.text, passwordController.text]);
+      } else {
+        Toast.show(response['errorMsg'], context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
     }
   }
 

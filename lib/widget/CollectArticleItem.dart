@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/pages/ArticleDetailPage.dart';
+import 'package:flutter_wanandroid/http/HttpUtilDio.dart';
+import 'package:flutter_wanandroid/http/api.dart';
+import 'package:toast/toast.dart';
 
 ///收藏文章列表Item
 // ignore: must_be_immutable
@@ -15,8 +18,23 @@ class CollectArticleItem extends StatefulWidget {
 }
 
 class CollectArticleItemState extends State<CollectArticleItem> {
+  int id = 0;
+
+  void dealWithCollect() async {
+    Map<String, dynamic> response = await HttpUtilDio.getInstance().post(Api.UN_COLLECT_OUTSIDE + "$id/json");
+    if (response['errorCode'] == 0) {
+      Toast.show('操作成功', context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      setState(() {
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (id == 0) {
+      id = widget.itemData['id'];
+    }
     Row author = Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -90,10 +108,11 @@ class CollectArticleItemState extends State<CollectArticleItem> {
       //阴影
       elevation: 8.0,
       //设置圆角半径
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14.0))),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14.0))),
       child: InkWell(
         child: column,
-        onTap: (){
+        onTap: () {
           itemClick(widget.itemData);
         },
       ),
@@ -108,5 +127,4 @@ class CollectArticleItemState extends State<CollectArticleItem> {
       );
     }));
   }
-
 }

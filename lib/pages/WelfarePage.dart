@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/http/api.dart';
-import 'package:flutter_wanandroid/http/http_util_gank.dart';
+import 'package:flutter_wanandroid/http/HttpUtilDio.dart';
+import 'package:toast/toast.dart';
 
 ///福利页面
 class WelfarePage extends StatefulWidget {
@@ -11,21 +12,25 @@ class WelfarePage extends StatefulWidget {
 }
 
 class WelfarePageState extends State<WelfarePage> {
-  var curPage = 1;
+
+  var currentPage = 1;
   List mListData = List();
   ScrollController scrollController = new ScrollController();
 
   ///获取福利图片数据
   ///数据来源：干货集中营
-  void getWelfareData() {
-    String url = Api.Welfare + "/$curPage";
+  void getWelfareData() async {
+    Map<String, dynamic> response =
+        await HttpUtilDio.getInstance().get(Api.Welfare + "/$currentPage");
 
-    HttpUtil.get(url, (data) {
+    if (response['errorCode'] == 0) {
+      var data = response['data'];
       if (data != null) {
-        var listData = data;
+        var listData = data['datas'];
+
         setState(() {
           List list = List();
-          if (curPage == 0) {
+          if (currentPage == 0) {
             mListData.clear();
           }
           list.addAll(mListData);
@@ -33,7 +38,10 @@ class WelfarePageState extends State<WelfarePage> {
           mListData = list;
         });
       }
-    });
+    } else {
+      Toast.show(response['errorMsg'], context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    }
   }
 
   @override
@@ -44,7 +52,7 @@ class WelfarePageState extends State<WelfarePage> {
       var position = scrollController.position;
       // 小于50px时，触发上拉加载；
       if (position.maxScrollExtent - position.pixels < 50) {
-        curPage++;
+        currentPage++;
         getWelfareData();
       }
     });
@@ -59,7 +67,7 @@ class WelfarePageState extends State<WelfarePage> {
   }
 
   Future<Null> pullToRefresh() async {
-    curPage = 1;
+    currentPage = 1;
     mListData.clear();
     getWelfareData();
     return null;

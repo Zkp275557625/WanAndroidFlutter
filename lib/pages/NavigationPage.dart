@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_wanandroid/http/http_util.dart';
+import 'package:flutter_wanandroid/http/HttpUtilDio.dart';
 import 'package:flutter_wanandroid/http/api.dart';
 import 'package:flutter_wanandroid/constant/AppColors.dart';
 import 'package:flutter_wanandroid/pages/ArticleDetailPage.dart';
+import 'package:toast/toast.dart';
 
 ///导航页面
 class NavigationPage extends StatefulWidget {
@@ -12,16 +13,23 @@ class NavigationPage extends StatefulWidget {
   }
 }
 
-class NavigationPageState extends State<NavigationPage> {
-  List mListData = List();
+class NavigationPageState extends State<NavigationPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+  List<dynamic> mListData;
   int indexChecked = 0;
 
-  void getNavigation() {
-    HttpUtil.get(Api.Navigation, (data) {
-      setState(() {
-        mListData = data;
-      });
-    });
+  void getNavigation() async {
+    Map<String, dynamic> response =
+        await HttpUtilDio.getInstance().get(Api.Navigation);
+
+    if (response['errorCode'] == 0) {
+      mListData = response['data'];
+    } else {
+      Toast.show(response['errorMsg'], context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    }
   }
 
   @override
@@ -31,6 +39,7 @@ class NavigationPageState extends State<NavigationPage> {
   }
 
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
     if (mListData == null) {
       return Center(
@@ -38,7 +47,7 @@ class NavigationPageState extends State<NavigationPage> {
       );
     } else {
       return new Scaffold(
-          body: mListData.length > 0
+          body: mListData != null
               ? Row(
                   children: <Widget>[
                     Expanded(
@@ -79,11 +88,16 @@ class NavigationPageState extends State<NavigationPage> {
                           color: Colors.white,
                           child: ListView.builder(
                               itemCount:
-                                  mListData[indexChecked]['articles'].length,
+                                  mListData.elementAt(indexChecked) == null
+                                      ? 0
+                                      : mListData
+                                          .elementAt(indexChecked)['articles']
+                                          .length,
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
-                                    itemClick(mListData[indexChecked]['articles'][index]);
+                                    itemClick(mListData[indexChecked]
+                                        ['articles'][index]);
                                   },
                                   child: Container(
                                     alignment: Alignment.center,
@@ -99,7 +113,8 @@ class NavigationPageState extends State<NavigationPage> {
                                               width: 1),
                                         )),
                                     child: Text(
-                                      mListData[indexChecked]['articles'][index]['title'],
+                                      mListData[indexChecked]['articles'][index]
+                                          ['title'],
                                       style: TextStyle(fontSize: 14.0),
                                     ),
                                   ),
@@ -122,5 +137,4 @@ class NavigationPageState extends State<NavigationPage> {
       );
     }));
   }
-
 }

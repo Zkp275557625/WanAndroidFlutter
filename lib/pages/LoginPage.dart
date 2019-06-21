@@ -59,7 +59,6 @@ class LoginPageState extends State<LoginPage> {
 
       Map<String, dynamic> response = await HttpUtilDio.getInstance()
           .post(Api.LOGIN, queryParams: params, token: mCancelToken);
-
       if (response['errorCode'] == 0) {
         Toast.show('登陆成功', context,
             duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);

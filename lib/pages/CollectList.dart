@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/http/HttpUtilDio.dart';
 import 'package:flutter_wanandroid/http/api.dart';
 import 'package:flutter_wanandroid/widget/EndLine.dart';
-import 'package:flutter_wanandroid/widget/CollectArticleItem.dart';
 import 'package:toast/toast.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_wanandroid/pages/ArticleDetailPage.dart';
 
 ///收藏列表
 class CollectListPage extends StatefulWidget {
@@ -22,6 +22,19 @@ class CollectListPageState extends State<CollectListPage> {
   var listTotalSize = 0;
   ScrollController controller = ScrollController();
 
+  int id = 0;
+
+  void dealWithCollect() async {
+    Map<String, dynamic> response = await HttpUtilDio.getInstance().post(Api.UN_COLLECT_OUTSIDE + "$id/json");
+    if (response['errorCode'] == 0) {
+      Toast.show('操作成功', context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      setState(() {
+        getCollectList();
+      });
+    }
+  }
+
   void getCollectList() async {
     var url = Api.COLLECT_LIST + "$currentPage/json";
 
@@ -33,7 +46,7 @@ class CollectListPageState extends State<CollectListPage> {
       var data = response['data'];
       if (data != null) {
         var listData = data['datas'];
-        print(listData.toString());
+
         listTotalSize = data["total"];
         setState(() {
           List list = List();
@@ -88,7 +101,97 @@ class CollectListPageState extends State<CollectListPage> {
       return EndLine();
     }
 
-    return CollectArticleItem(itemData);
+    Row author = Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+            child: Row(
+          children: <Widget>[
+            Text('作者:  '),
+            Text(
+              itemData['author'],
+              style: TextStyle(color: Theme.of(context).primaryColor),
+            ),
+          ],
+        )),
+      ],
+    );
+
+    Row title = Row(
+      children: <Widget>[
+        Expanded(
+          child: Text.rich(
+            TextSpan(text: itemData['title']),
+            //自动换行显示
+            softWrap: true,
+            style: TextStyle(fontSize: 16.0, color: Colors.black),
+            textAlign: TextAlign.left,
+          ),
+        )
+      ],
+    );
+
+    Row niceDate = Row(
+      children: <Widget>[
+        IconButton(
+          icon: Icon(
+            Icons.favorite,
+            color: Colors.red,
+          ),
+          onPressed: () {
+            dealWithCollect();
+          },
+        ),
+        Expanded(
+          child: Text(
+            itemData['niceDate'],
+            softWrap: true,
+            style: TextStyle(color: Theme.of(context).primaryColor),
+            textAlign: TextAlign.left,
+          ),
+        )
+      ],
+    );
+
+    Column column = Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+          child: author,
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 0.0),
+          child: title,
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(0.0, 5.0, 10.0, 5.0),
+          child: niceDate,
+        ),
+      ],
+    );
+
+    return Card(
+      //阴影
+      elevation: 8.0,
+      //设置圆角半径
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14.0))),
+      child: InkWell(
+        child: column,
+        onTap: () {
+          itemClick(itemData);
+        },
+      ),
+    );
+  }
+
+  void itemClick(itemData) async {
+    await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      return ArticleDetailPage(
+        title: itemData['title'],
+        url: itemData['link'],
+      );
+    }));
   }
 
   @override

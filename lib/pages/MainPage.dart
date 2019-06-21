@@ -6,6 +6,8 @@ import 'package:flutter_wanandroid/pages/KnowledgePage.dart';
 import 'package:flutter_wanandroid/pages/WeChatPage.dart';
 import 'package:flutter_wanandroid/pages/NavigationPage.dart';
 import 'package:flutter_wanandroid/pages/ProjectPage.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_wanandroid/pages/FriendPage.dart';
 
 /// MainPage：主页面，相当于MainActivity
 
@@ -37,12 +39,22 @@ class MainPageState extends State<MainPage> with TickerProviderStateMixin {
     );
   }
 
+  ///请求获取权限
+  void requestPermissions() async {
+    await PermissionHandler().requestPermissions([PermissionGroup.storage]);
 
+    PermissionStatus permission = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.storage);
+
+    if (permission == PermissionStatus.granted) {
+    } else {
+      await PermissionHandler().requestPermissions([PermissionGroup.storage]);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-
     bottomNavigationList = <BottomNavigationBarItem>[
       BottomNavigationBarItem(
           icon: const Icon(Icons.home),
@@ -69,10 +81,17 @@ class MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   final navigatorKey = GlobalKey<NavigatorState>();
 
+  void toFriendPage() async {
+    await Navigator.of(context, rootNavigator: true)
+        .push(MaterialPageRoute(builder: (context) {
+      return FriendPage();
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
+    requestPermissions();
     initData();
-
     return MaterialApp(
       navigatorKey: navigatorKey,
       theme: ThemeData(
@@ -98,17 +117,21 @@ class MainPageState extends State<MainPage> with TickerProviderStateMixin {
             //搜索
             IconButton(
               icon: Icon(Icons.search),
-              onPressed: () {},
+              onPressed: () {
+                print('搜索');
+              },
             ),
             //常用网站
             IconButton(
               icon: Icon(Icons.language),
-              onPressed: () {},
+              onPressed: () {
+                toFriendPage();
+              },
             ),
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: (){
+          onPressed: () {
             print('被点击了');
           },
           backgroundColor: AppColors.colorPrimary,

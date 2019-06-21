@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_wanandroid/http/api.dart';
-import 'package:flutter_wanandroid/http/http_util.dart';
+import 'package:flutter_wanandroid/http/HttpUtilDio.dart';
 import 'package:flutter_wanandroid/widget/ArticleItem.dart';
 import 'package:flutter_wanandroid/widget/EndLine.dart';
+import 'package:toast/toast.dart';
 
 //文章列表页面
 class ArticleListPage extends StatefulWidget {
@@ -16,34 +17,36 @@ class ArticleListPage extends StatefulWidget {
   }
 }
 
-class ArticleListPageState extends State<ArticleListPage> with AutomaticKeepAliveClientMixin {
-
+class ArticleListPageState extends State<ArticleListPage>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
-  int curPage = 0;
+  int currentPage = 0;
   Map<String, String> map = Map();
   List mListData = List();
   int listTotalSize = 0;
   ScrollController controller = ScrollController();
 
   ///获取文章列表
-  void getArticleList() {
-    String url = Api.ARTICLE_LIST;
-    url += "$curPage/json";
+  void getArticleList() async {
+    String url = Api.ARTICLE_LIST + "$currentPage/json";
     map['cid'] = widget.id;
-    HttpUtil.get(url, (data) {
-      if (data != null) {
-        Map<String, dynamic> map = data;
-        var listData = map['datas'];
-        listTotalSize = map["total"];
+
+    Map<String, dynamic> response =
+        await HttpUtilDio.getInstance().get(url, queryParams: map);
+    if (response['errorCode'] == 0) {
+      var data = response['data'];
+      if(data != null){
+        var listData = data['datas'];
+
+        listTotalSize = data["total"];
         setState(() {
           List list = List();
-          if (curPage == 0) {
+          if (currentPage == 0) {
             mListData.clear();
           }
-          curPage++;
-
+          currentPage++;
           list.addAll(mListData);
           list.addAll(listData);
           if (list.length >= listTotalSize) {
@@ -51,8 +54,12 @@ class ArticleListPageState extends State<ArticleListPage> with AutomaticKeepAliv
           }
           mListData = list;
         });
+
       }
-    }, params: map);
+    } else {
+      Toast.show(response['errorMsg'], context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    }
   }
 
   @override
@@ -68,7 +75,6 @@ class ArticleListPageState extends State<ArticleListPage> with AutomaticKeepAliv
         getArticleList();
       }
     });
-
   }
 
   @override
@@ -78,7 +84,7 @@ class ArticleListPageState extends State<ArticleListPage> with AutomaticKeepAliv
   }
 
   Future<Null> pullToRefresh() async {
-    curPage = 0;
+    currentPage = 0;
     mListData.clear();
     getArticleList();
     return null;
@@ -86,28 +92,27 @@ class ArticleListPageState extends State<ArticleListPage> with AutomaticKeepAliv
 
   Widget buildItem(int i) {
     var itemData = mListData[i];
-    if (i == mListData.length - 1 &&
-        itemData.toString() == 'COMPLETE') {
-      return  EndLine();
+    if (i == mListData.length - 1 && itemData.toString() == 'COMPLETE') {
+      return EndLine();
     }
-    return  ArticleItem(itemData);
+    return ArticleItem(itemData);
   }
 
   @override
   // ignore: must_call_super
   Widget build(BuildContext context) {
     if (mListData == null) {
-      return  Center(
-        child:  CircularProgressIndicator(),
+      return Center(
+        child: CircularProgressIndicator(),
       );
     } else {
-      Widget listView =  ListView.builder(
-        key:  PageStorageKey(widget.id),
+      Widget listView = ListView.builder(
+        key: PageStorageKey(widget.id),
         itemCount: mListData.length,
         itemBuilder: (context, i) => buildItem(i),
         controller: controller,
       );
-      return  RefreshIndicator(child: listView, onRefresh: pullToRefresh);
+      return RefreshIndicator(child: listView, onRefresh: pullToRefresh);
     }
   }
 }
